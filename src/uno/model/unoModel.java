@@ -18,15 +18,15 @@ public class unoModel implements ModelInterface {
     private ArrayList<ClockObserver> clockObservers=new ArrayList<>(player_number);
     private ArrayList<ColorObserver> ColorObservers=new ArrayList<>(player_number);
     private ArrayList<ArrayList<unoCard>>  card_on_player=new ArrayList<>(player_number);
-    private ArrayList<unoThread> autoplay_array=new ArrayList<>(player_number);
+    private ArrayList<unoThread> autoplay_array=new ArrayList<>(player_number);//自动打牌器
     private ArrayList<Boolean> is_alive=new ArrayList<>(player_number);
-    private int pointer;
+    private int pointer=0;
     private unoCard current_card;
     private cardFunction current_function;
-    private int all_plus;
-    private boolean direction;//顺时针逆时针
-    private TableCard table_card;
     private Color current_color;  //换色牌和+4牌
+    private int all_plus=0;
+    private boolean direction=true;//顺时针逆时针
+    private TableCard table_card=new TableCard();
     private Clock clock=new Clock();
 
 
@@ -61,10 +61,17 @@ public class unoModel implements ModelInterface {
 
     private unoModel(){
 
-        table_card=new TableCard();//洗牌
-        //初始化二维数组
+        //洗牌
+        for (ArrayList<unoCard> array:card_on_player
+             ) {
+            array.addAll(table_card.getCard(7));
+        }//初始化二维数组,每人七张牌
+        current_card=table_card.getCard(1).get(0);
+
         clock.start();
+        notifytableObserver();
     }
+
 
     public static synchronized unoModel getSingleModel() {
         if(singleModel==null){
@@ -75,7 +82,7 @@ public class unoModel implements ModelInterface {
 
     void next(){  //还要加入判断是否已经获胜
         if(direction){
-            if(pointer<player_number){
+            if(pointer<player_number-1){//要减一
                 pointer+=1;
             }
             else{pointer=0;}
@@ -187,6 +194,7 @@ public class unoModel implements ModelInterface {
         if(pointer==num){
             if (match(C)){
                 current_card=C;
+                card_on_player.get(num).remove(a);
                 if(C.getNumber()==-1)
                 {
                     update_function(pointer);//开启选色器，或者更新功能信息
@@ -199,6 +207,7 @@ public class unoModel implements ModelInterface {
         else{
             if(qiang(C)){
                 current_card=C;
+                card_on_player.get(num).remove(a);
                 pointer=num;
                 next();//要的要的
                 if(C.getNumber()==-1){
@@ -213,8 +222,9 @@ public class unoModel implements ModelInterface {
 
     @Override
     public void skip(int num) { //记得清空功能，然后分情况给牌
-        perform_function();
-        current_function=null;
+        if(current_function!=null) {
+            perform_function();
+        }
         next();
         clock.reset_10();
     }
@@ -241,7 +251,9 @@ public class unoModel implements ModelInterface {
             case Skip:break;
             case plusTwo:
             case plusFour_ChangeColor: {give_card(pointer,all_plus);break;}
+
         }
+        current_function=null;
     }
 
     @Override

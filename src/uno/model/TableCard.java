@@ -4,22 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 /*pass.the examination*/
 public class TableCard {
-    private ArrayList<unoCard> cardArrayList = new ArrayList<>(108);
+    private ArrayList<unoCard> cardArrayList = new ArrayList<>(115);
 
     public TableCard() {
         fill_card();
     }
 
     public List<unoCard> getCard(int n){
-        List<unoCard> li=cardArrayList.subList(cardArrayList.size()-n,cardArrayList.size());
-        for (int i=cardArrayList.size()-1;i<=cardArrayList.size()-n;--i){
-            cardArrayList.remove(i);
+        if(cardArrayList.size()<n){//检查牌库是否够
+            fill_card();
         }
-        return li;
+
+        List<unoCard> li=cardArrayList.subList(cardArrayList.size()-n,cardArrayList.size());
+        ArrayList<unoCard> li2=new ArrayList<>();
+        li2.addAll(li);
+
+        int x=cardArrayList.size();
+        li.clear();
+        return li2;
     }
 
 
-    public void fill_card() {  //每张牌加两次
+    private void fill_card() {  //每张牌加两次
         ArrayList<unoCard> templist = new ArrayList<>(108);//然后random抽牌
         //加入数字牌
 
