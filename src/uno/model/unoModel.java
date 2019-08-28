@@ -117,7 +117,7 @@ public class unoModel implements ModelInterface {
                             ||is_BP4(C)
                             ||is_CH(C);
                 }
-                else if(current_function==cardFunction.Skip)
+                else if(current_function==cardFunction.Forbid)
                     {return C.getFunc()==current_function;}
                 else return C.getFunc()==current_function
                     ||is_BP4(C);
@@ -231,7 +231,7 @@ public class unoModel implements ModelInterface {
 
     void update_function(int n){
         switch (current_card.getFunc()){
-            case Skip:{current_function=cardFunction.Skip;break;}
+            case Forbid:{current_function=cardFunction.Forbid;break;}
             case plusTwo:{current_function=cardFunction.plusTwo;break;}
             case Reverse:{direction=!direction;break;}
             case plusFour_ChangeColor:{ all_plus+=4; }
@@ -248,7 +248,7 @@ public class unoModel implements ModelInterface {
 
     void perform_function(){
         switch (current_function){
-            case Skip:break;
+            case Forbid:break;
             case plusTwo:
             case plusFour_ChangeColor: {give_card(pointer,all_plus);break;}
 

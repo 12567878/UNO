@@ -1,16 +1,16 @@
 package uno;
 
 import uno.model.unoModel;
-import uno.view.unoView;
+import uno.view.unoViewControl;
 
 public class Controller implements ControllerInterface {
 
     ModelInterface model= unoModel.getSingleModel();
-    unoView view;
+    unoViewControl view;
     final int num;
 
     public Controller(){
-        view=new unoView();
+        view=new unoViewControl();
         num=view.getNUM();
     }
 

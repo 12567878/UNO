@@ -36,9 +36,9 @@ public class TableCard {
                     templist.add(new unoCard(c, i));
                 }
                 //有色功能牌
-                templist.add(new unoCard(c, cardFunction.Skip));
+                templist.add(new unoCard(c, cardFunction.Forbid));
                 templist.add(new unoCard(c, cardFunction.plusTwo));
-                templist.add(new unoCard(c, cardFunction.Skip));
+                templist.add(new unoCard(c, cardFunction.Forbid));
                 templist.add(new unoCard(c, cardFunction.plusTwo));
                 templist.add(new unoCard(c, cardFunction.Reverse));
                 templist.add(new unoCard(c, cardFunction.Reverse));

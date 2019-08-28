@@ -7,11 +7,11 @@ import uno.ColorObserver;
 import uno.ModelInterface;
 import uno.tableObserver;
 
-public class unoView implements EventHandler<MouseEvent>, tableObserver, ColorObserver, ClockObserver {
+public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, ColorObserver, ClockObserver {
     ModelInterface model;
     final int num;
 
-    public unoView(){
+    public unoViewControl(){
         int n=model.registerObserver((tableObserver) this);
         num=n;
         model.registerObserver((ColorObserver)this);
