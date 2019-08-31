@@ -16,7 +16,7 @@ public interface ModelInterface {
 
     void send_card(int num, int a);
 
-    void skip(int num);
+    void skip();
 
     void get_my_card();
 
@@ -25,6 +25,8 @@ public interface ModelInterface {
     void get_current_card(  );
 
     void get_pointer(  );
+
+    void choose_color(int n);
 
 
 }

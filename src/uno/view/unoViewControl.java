@@ -1,6 +1,9 @@
 package uno.view;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import uno.ClockObserver;
 import uno.ColorObserver;
@@ -10,6 +13,7 @@ import uno.tableObserver;
 public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, ColorObserver, ClockObserver {
     ModelInterface model;
     final int num;
+
 
     public unoViewControl(){
         int n=model.registerObserver((tableObserver) this);

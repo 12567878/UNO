@@ -36,7 +36,7 @@ public class unoModel implements ModelInterface {
             CLOCK-=1;
             notifyclockObserver();
             if(CLOCK<=0){
-                skip(pointer);
+                skip();
             }
         });
 
@@ -65,8 +65,11 @@ public class unoModel implements ModelInterface {
         for (ArrayList<unoCard> array:card_on_player
              ) {
             array.addAll(table_card.getCard(7));
+            array.sort(null);
         }//初始化二维数组,每人七张牌
-        current_card=table_card.getCard(1).get(0);
+        do {//开局不能拿到功能牌
+            current_card = table_card.getCard(1).get(0);
+        }while(current_card.getNumber()==-1);
 
         clock.start();
         notifytableObserver();
@@ -110,7 +113,7 @@ public class unoModel implements ModelInterface {
                     ||is_BP4(C)
                     ||is_CH(C);
         }
-        else if(current_card.getColor()!=Color.Black){
+        else if(current_card.getColor()!=Color.Black){//彩色功能牌
                 if(current_function==null){
                     return C.getColor()==current_card.getColor()
                             ||C.getFunc()==current_card.getFunc()
@@ -119,10 +122,10 @@ public class unoModel implements ModelInterface {
                 }
                 else if(current_function==cardFunction.Forbid)
                     {return C.getFunc()==current_function;}
-                else return C.getFunc()==current_function
+                else return C.getFunc()==current_function //
                     ||is_BP4(C);
         }
-        else if(current_function==null){
+        else if(current_function==null){//换色牌，过时加四
             return C.getColor()==current_color;
         }
         else return qiang(C);//一定是黑色加四
@@ -130,13 +133,16 @@ public class unoModel implements ModelInterface {
     }
 
     boolean qiang(unoCard C){
-        if(C==current_card)
+        if(C.getNumber()==current_card.getNumber()
+            &&C.getFunc()==current_card.getFunc()
+            &&C.getColor()==current_card.getColor())
             return true;
         else return false;
     }
 
     void give_card(int pointer,int n){
         card_on_player.get(pointer).addAll(table_card.getCard(n));
+        card_on_player.get(pointer).sort(null);
     }
 
     void notifytableObserver(){
@@ -147,8 +153,8 @@ public class unoModel implements ModelInterface {
         }
     }
 
-    void notifycolorObserver(int n){
-        ColorObservers.get(n).update_color();
+    void notifycolorObserver() {
+        ColorObservers.get(pointer);
     }
 
     void notifyclockObserver(){
@@ -189,31 +195,40 @@ public class unoModel implements ModelInterface {
     }
 
     @Override
-    public synchronized void send_card(int num, int a) {//选了色才能出下一张
+    public synchronized void send_card(int num, int a) {
         unoCard C= card_on_player.get(num).get(a);
         if(pointer==num){
-            if (match(C)){
+            if (match(C)||qiang(C)){
                 current_card=C;
                 card_on_player.get(num).remove(a);
                 if(C.getNumber()==-1)
                 {
-                    update_function(pointer);//开启选色器，或者更新功能信息
+                    update_function();//仅开启选色器，或者更新功能信息
                 }
-                next();
-                clock.reset_10();
-                notifytableObserver();//notify一定是最后一步
-            }
+
+                if(current_card.getFunc()==cardFunction.ChangeColor//换色牌
+                    ||current_card.getFunc()==cardFunction.plusFour_ChangeColor)
+                {
+                    clock.reset_5();
+                    notifycolorObserver();
+                    notifytableObserver();
+                }
+                else{
+                    next();
+                    clock.reset_10();
+                    notifytableObserver();}//notify一定是最后一步
+                }
         }
         else{
             if(qiang(C)){
                 current_card=C;
                 card_on_player.get(num).remove(a);
                 pointer=num;
-                next();//要的要的
                 if(C.getNumber()==-1){
-                    update_function(pointer);
+                    update_function();
                 }
-                clock.reset_10(); //Timer关闭又开始？
+                next();//要的要的
+                clock.reset_10();
                 notifytableObserver();
 
             }
@@ -221,24 +236,39 @@ public class unoModel implements ModelInterface {
     }
 
     @Override
-    public void skip(int num) { //记得清空功能，然后分情况给牌
-        if(current_function!=null) {
-            perform_function();
+    public void choose_color(int n) {
+        switch (n) {
+            case 1:current_color=Color.Red;
+                break;
+            case 2:current_color=Color.Yellow;
+                break;
+            case 3:current_color=Color.Blue;
+                break;
+            case 4:current_color=Color.Green;
         }
         next();
         clock.reset_10();
+        notifytableObserver();
     }
 
-    void update_function(int n){
+    @Override
+    public void skip() { //清空功能，然后分情况给牌
+           //统一给一个flag，指示是否能skip
+        perform_function();
+        next();
+        current_function=null;
+        clock.reset_10();
+        notifytableObserver();
+    }
+
+    void update_function(){
         switch (current_card.getFunc()){
             case Forbid:{current_function=cardFunction.Forbid;break;}
-            case plusTwo:{current_function=cardFunction.plusTwo;break;}
+            case plusTwo:{current_function=cardFunction.plusTwo;all_plus+=2;break;}
             case Reverse:{direction=!direction;break;}
             case plusFour_ChangeColor:{ all_plus+=4; }
             case ChangeColor:{
-                notifycolorObserver(pointer);
-                clock.reset_5();
-                //加入获取了输入或者时间到了默认选接着向下
+                notifycolorObserver();
                 break;
             }
 
@@ -247,13 +277,17 @@ public class unoModel implements ModelInterface {
     }
 
     void perform_function(){
-        switch (current_function){
-            case Forbid:break;
-            case plusTwo:
-            case plusFour_ChangeColor: {give_card(pointer,all_plus);break;}
-
+        if(current_function==null){
+            give_card(pointer,1);
         }
-        current_function=null;
+        else
+            switch (current_function){
+                case Forbid:break;
+                case plusTwo:
+                case plusFour_ChangeColor: {give_card(pointer,all_plus);break;}
+                default:give_card(pointer,1);
+            }
+            current_function=null;
     }
 
     @Override
@@ -275,6 +309,8 @@ public class unoModel implements ModelInterface {
     public void get_pointer() {
 
     }
+
+
 
 
 }
