@@ -5,13 +5,13 @@ import uno.view.unoViewControl;
 
 public class Controller implements ControllerInterface {
 
-    ModelInterface model= unoModel.getSingleModel();
+    ModelInterface model;
     unoViewControl view;
     final int num;
 
-    public Controller(){
-        view=new unoViewControl();
-        num=view.getNUM();
+    public Controller(int n,ModelInterface model){
+        num=n;
+        this.model=model;
     }
 
     @Override

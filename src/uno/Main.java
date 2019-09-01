@@ -22,7 +22,6 @@ public class Main extends Application {
             Parent root2 = FXMLLoader.load(getClass().getResource("view/gaming.fxml"));
             assert stage!=null;
             stage.setScene(new Scene(root2, 1080, 810));
-            //stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
