@@ -1,5 +1,9 @@
 package uno;
 
+import uno.model.unoCard;
+
+import java.util.ArrayList;
+
 public interface ModelInterface {
 
     int registerObserver(tableObserver o);
@@ -18,13 +22,13 @@ public interface ModelInterface {
 
     void skip();
 
-    void get_my_card();
+    ArrayList<unoCard> get_my_card(int num);
 
     void get_others_card( );
 
     void get_current_card(  );
 
-    void get_pointer(  );
+    int get_pointer(  );
 
     void choose_color(int n);
 

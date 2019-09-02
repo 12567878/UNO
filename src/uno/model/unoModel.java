@@ -159,7 +159,7 @@ public class unoModel implements ModelInterface {
 
     void notifyclockObserver(){
         for(int i=0;i<clockObservers.size();++i){
-
+            clockObservers.get(i).update_clock(i,clock.CLOCK);
         }
     }
 
@@ -291,8 +291,8 @@ public class unoModel implements ModelInterface {
     }
 
     @Override
-    public void get_my_card() {
-
+    public ArrayList<unoCard> get_my_card(int num) {
+        return card_on_player.get(num);
     }
 
     @Override
@@ -306,8 +306,8 @@ public class unoModel implements ModelInterface {
     }
 
     @Override
-    public void get_pointer() {
-
+    public int get_pointer() {
+        return pointer;
     }
 
 
