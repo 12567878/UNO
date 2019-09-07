@@ -23,4 +23,9 @@ public class Controller implements ControllerInterface {
     public void skip() {
         model.skip(num);
     }
+
+    @Override
+    public void choose_color(int n) {
+        model.choose_color(n);
+    }
 }

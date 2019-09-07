@@ -1,5 +1,6 @@
 package uno;
 
+import uno.model.Color;
 import uno.model.unoCard;
 
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public interface ModelInterface {
     ArrayList<Integer> get_others_card(int num);
 
     unoCard get_current_card(  );
+
+    Color get_color();
 
     int get_pointer(  );
 

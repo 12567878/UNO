@@ -29,7 +29,7 @@ public class unoModel implements ModelInterface {
     private boolean direction=true;//顺时针逆时针
     private TableCard table_card=new TableCard();
     private Clock clock=new Clock();
-
+    private boolean choosing_color=false;
 
     private class Clock{//pass
         private volatile int CLOCK=10;
@@ -37,7 +37,13 @@ public class unoModel implements ModelInterface {
             CLOCK-=1;
             notifyclockObserver();
             if(CLOCK<=0){
-                skip(pointer);
+                if(choosing_color){
+                    int n= (int) (Math.random()*4+1);
+                    choose_color(n);
+                }
+                else {
+                    skip(pointer);
+                }
             }
         });
 
@@ -83,10 +89,20 @@ public class unoModel implements ModelInterface {
         }while(current_card.getNumber()==-1);
 
         clock.start();
+
         //notifytableObserver();  还没注册观察者
     }
 
 
+    public void single_start(){
+        autoplay_array.add(new unoThread());
+        autoplay_array.add(new unoThread());
+        autoplay_array.add(new unoThread());
+        for (unoThread t:autoplay_array
+             ) {
+            t.start();
+        }
+    }
     public static synchronized unoModel getSingleModel() {
         if(singleModel==null){
             singleModel=new unoModel();
@@ -167,7 +183,18 @@ public class unoModel implements ModelInterface {
     }
 
     void notifycolorObserver() {
-        ColorObservers.get(pointer);
+        if(!choosing_color){
+            ColorObservers.get(0).update_color(current_color);
+            //全关了,根据currentcolor显示颜色
+        }
+        else if(pointer!=0){
+            int n=(int)(Math.random()*4+1);
+            choose_color(n);
+            ColorObservers.get(0).update_color(current_color);
+        }
+        else{//是玩家
+            ColorObservers.get(0).update_color_chooser();
+        }
     }
 
     void notifyclockObserver(){//需要考虑clock的线程问题,需要借助runlater方法
@@ -211,8 +238,10 @@ public class unoModel implements ModelInterface {
 
     }
 
+
     @Override
     public synchronized void send_card(int num, int a) {
+        if(a>=card_on_player.get(num).size())return;
         unoCard C= card_on_player.get(num).get(a);
         if(pointer==num){
             if (match(C)||qiang(C)){
@@ -227,14 +256,18 @@ public class unoModel implements ModelInterface {
                     ||current_card.getFunc()==cardFunction.plusFour_ChangeColor)
                 {
                     clock.reset_5();
+                    choosing_color=true;
                     notifycolorObserver();
                     notifytableObserver();
                 }
                 else{
                     next();
                     clock.reset_10();
-                    notifytableObserver();}//notify一定是最后一步
-                }
+                    notifytableObserver();
+                }//notify一定是最后一步
+                current_color=null;
+                ColorObservers.get(0).update_color(current_color);//让颜色框归零
+            }
         }
         else{
             if(qiang(C)){
@@ -246,6 +279,7 @@ public class unoModel implements ModelInterface {
                 }
                 next();//要的要的
                 clock.reset_10();
+
                 notifytableObserver();
 
             }
@@ -265,7 +299,9 @@ public class unoModel implements ModelInterface {
         }
         next();
         clock.reset_10();
+        choosing_color=false;
         notifytableObserver();
+        notifycolorObserver();
     }
 
     @Override
@@ -334,6 +370,11 @@ public class unoModel implements ModelInterface {
     @Override
     public unoCard get_current_card() {
         return current_card;
+    }
+
+    @Override
+    public Color get_color() {
+        return current_color;
     }
 
     @Override

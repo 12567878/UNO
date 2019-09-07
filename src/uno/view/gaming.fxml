@@ -66,6 +66,15 @@
                         <Image url="@../jpg/back.jpg" />
                      </image>
                   </ImageView>
+                  <Rectangle fx:id="color_rect" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="63.0" layoutX="289.0" layoutY="301.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="125.0" />
+                  <HBox fx:id="color_chooser" layoutX="234.0" layoutY="527.0" maxWidth="700.0" minWidth="618.0" opacity="0.0" prefHeight="48.0" prefWidth="618.0" spacing="95.0">
+                     <children>
+                        <Rectangle fx:id="red" arcHeight="5.0" arcWidth="5.0" fill="#ff2f2f" height="48.0" layoutX="234.0" layoutY="527.0" onMouseClicked="#choose_red" stroke="BLACK" strokeType="INSIDE" width="82.0" />
+                        <Rectangle fx:id="yellow" arcHeight="5.0" arcWidth="5.0" fill="#f8ff1f" height="48.0" layoutX="387.0" layoutY="529.0" onMouseClicked="#choose_yellow" stroke="BLACK" strokeType="INSIDE" width="82.0" />
+                        <Rectangle fx:id="blue" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="48.0" layoutX="548.0" layoutY="528.0" onMouseClicked="#choose_blue" stroke="BLACK" strokeType="INSIDE" width="82.0" />
+                        <Rectangle fx:id="green" arcHeight="5.0" arcWidth="5.0" fill="#1fff3b" height="48.0" layoutX="687.0" layoutY="527.0" onMouseClicked="#choose_green" stroke="BLACK" strokeType="INSIDE" width="82.0" />
+                     </children>
+                  </HBox>
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">

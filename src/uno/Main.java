@@ -15,16 +15,19 @@ import java.io.IOException;
 
 public class Main extends Application {
     private static Stage stage;  //注意static
-    unoModel model = unoModel.getSingleModel();
+    unoModel model ;
     @FXML
     Button single_button;
     @FXML
     void game_start(MouseEvent event) throws Exception{
         try {
+            model= unoModel.getSingleModel();
+
             //assert single_button==null; 不通过，说明不为null
             Parent root2 = FXMLLoader.load(getClass().getResource("view/gaming.fxml"));
             assert stage!=null;
             stage.setScene(new Scene(root2, 1080, 810));
+            model.single_start();
             model.notifytableObserver();
         } catch (IOException e) {
             e.printStackTrace();

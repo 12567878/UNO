@@ -10,7 +10,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import uno.*;
 import uno.model.Color;
 import uno.model.cardFunction;
@@ -56,10 +58,54 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
     @FXML
     private ImageView current_card;
 
+
+    @FXML
+    private Rectangle color_rect;
+
+    @FXML
+    private HBox color_chooser;
+
+
+    @FXML
+    private Rectangle green;
+
+    @FXML
+    private Rectangle yellow;
+    @FXML
+    private Rectangle red;
+    @FXML
+    private Rectangle blue;
+
+    @FXML
+    void choose_red(MouseEvent event) {
+        controller.choose_color(1);
+        close_color_chooser();
+    }
+
+    @FXML
+    void choose_yellow(MouseEvent event) {
+        controller.choose_color(2);
+        close_color_chooser();
+    }
+
+    @FXML
+    void choose_blue(MouseEvent event) {
+        controller.choose_color(3);
+        close_color_chooser();
+    }
+
     @FXML
     void skip(MouseEvent event) {//要改成Mouseevent  argument type mismatch
         controller.skip();
     }
+
+    @FXML
+    void choose_green(MouseEvent event) {
+        controller.choose_color(4);
+        close_color_chooser();
+    }
+
+    boolean choosing=false;
 
     public unoViewControl(){
         model= unoModel.getSingleModel();
@@ -143,14 +189,33 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
         }
     }
 
+    //设置四个点击事件，分别选择颜色并关闭选色器
+
     @Override
     public void update_color_chooser() {
+        //点击以后关掉!!!
+        color_chooser.opacityProperty().setValue(1);
+        choosing=true;
 
     }
 
-    @Override
-    public void update_color() {//current_color
+    void close_color_chooser(){
+        color_chooser.opacityProperty().setValue(0);
+        choosing=false;
+    }
 
+    @Override
+    public void update_color(Color color) {//current_color
+        if(color==null)color_rect.opacityProperty().setValue(0);
+        else {
+            color_rect.opacityProperty().setValue(1);
+            switch (color){
+                case Yellow:color_rect.setFill(javafx.scene.paint.Color.YELLOW);break;
+                case Blue:color_rect.setFill(javafx.scene.paint.Color.BLUE);break;
+                case Green:color_rect.setFill(javafx.scene.paint.Color.GREEN);break;
+                case Red:color_rect.setFill(javafx.scene.paint.Color.RED);break;
+            }
+        }
     }
 
     @Override
