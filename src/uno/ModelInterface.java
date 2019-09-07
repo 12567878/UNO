@@ -20,13 +20,13 @@ public interface ModelInterface {
 
     void send_card(int num, int a);
 
-    void skip();
+    void skip(int n);
 
     ArrayList<unoCard> get_my_card(int num);
 
-    void get_others_card( );
+    ArrayList<Integer> get_others_card(int num);
 
-    void get_current_card(  );
+    unoCard get_current_card(  );
 
     int get_pointer(  );
 

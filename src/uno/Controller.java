@@ -21,6 +21,6 @@ public class Controller implements ControllerInterface {
 
     @Override
     public void skip() {
-        model.skip();
+        model.skip(num);
     }
 }

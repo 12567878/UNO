@@ -3,8 +3,11 @@ package uno.view;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Polygon;
@@ -13,6 +16,10 @@ import uno.model.Color;
 import uno.model.cardFunction;
 import uno.model.unoCard;
 import uno.model.unoModel;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 /*
 *
@@ -37,14 +44,26 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
     private Label num_of_3;
 
     @FXML
-    private FlowPane card_flow;//往里面加卡
+    private FlowPane card_flow;
 
     @FXML
     private Polygon tri_pointer;
 
+    @FXML
+    private Label time_label;
+
+
+    @FXML
+    private ImageView current_card;
+
+    @FXML
+    void skip(MouseEvent event) {//要改成Mouseevent  argument type mismatch
+        controller.skip();
+    }
+
     public unoViewControl(){
         model= unoModel.getSingleModel();
-        //System.out.println("successfully get model");  OK
+        //System.out.println(num_of_2==null); // 也许是先构造这个然后后将fxml实现
         int n=model.registerObserver((tableObserver) this);
         num=n;
         controller=new Controller(num,model);
@@ -69,17 +88,58 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
 
     @Override
     public void update_card() {//自己的，各个桌上牌的数量，当前牌
+        ArrayList<unoCard> my_card=model.get_my_card(num);
+        ArrayList<Integer>others_card_number=model.get_others_card(num);
+        unoCard unocard=model.get_current_card();
 
+        String lo=get_card_image_location(unocard);//需要重构
+        File fi=new File(lo);
+        Image im=null;
+        try {
+            im = new Image(fi.toPath().toUri().toURL().toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        current_card.setImage(im);
+        card_flow.getChildren().clear();
+        for (unoCard c:my_card
+             ) {
+            String location=get_card_image_location(c);//需要重构
+            File f=new File(location);
+            //System.out.println(f.canRead());//尝试是否可读路径 可以
+            Image image= null;
+            try {
+                image = new Image(f.toPath().toUri().toURL().toString());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            ImageView imageView=new ImageView();
+            imageView.setImage(image);
+            imageView.setFitHeight(180);
+            imageView.setFitWidth(125);
+            imageView.addEventHandler(MouseEvent.MOUSE_CLICKED,event -> {
+                ImageView i= (ImageView) event.getSource();
+                int n=search_in_flow(card_flow,i);
+                if(n!=-1){
+                    controller.send_card(n);
+                }
+            });
+            card_flow.getChildren().add(imageView);
+        }
+        num_of_1.textProperty().setValue(Integer.toString(others_card_number.get(0)));
+        num_of_2.textProperty().setValue(Integer.toString(others_card_number.get(1)));
+        num_of_3.textProperty().setValue(Integer.toString(others_card_number.get(2)));
     }
 
     @Override
     public void update_pointer() {
         int n=model.get_pointer();
         switch (n){
-            case 0:tri_pointer.rotateProperty().setValue(180);
-            case 1:tri_pointer.rotateProperty().setValue(90);
-            case 2:tri_pointer.rotateProperty().setValue(0);
-            case 3:tri_pointer.rotateProperty().setValue(270);
+            case 0:tri_pointer.rotateProperty().setValue(180);break;
+            case 1:tri_pointer.rotateProperty().setValue(90);break;
+            case 2:tri_pointer.rotateProperty().setValue(0);break;
+            case 3:tri_pointer.rotateProperty().setValue(270);break;
         }
     }
 
@@ -95,11 +155,11 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
 
     @Override
     public void update_clock(int num,int time) {
-
+        time_label.setText(Integer.toString(time));
     }
 
-    private String get_card_image_location(unoCard c){
-        String ans="file:../jpg/";
+    private String get_card_image_location(unoCard c){//此方法正确
+        String ans="src/uno/jpg/";
         switch (c.getColor()){
             case Black:{
                 if(c.getFunc()== cardFunction.ChangeColor){
@@ -129,6 +189,13 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
             default:ans+=c.getNumber()+".jpg";break;
         }
         return ans;
+    }
+
+    private int search_in_flow(FlowPane f,Node n){
+        for (int i=0;i<f.getChildren().size();++i){
+            if(n==f.getChildren().get(i))return i;
+        }
+        return -1;
     }
 
 }

@@ -49,7 +49,7 @@ public class unoThread extends Thread implements tableObserver, ControllerInterf
 
     @Override
     public void skip() {
-        model.skip();
+        model.skip(num);
     }
 
 

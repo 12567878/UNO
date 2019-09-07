@@ -1,6 +1,7 @@
 package uno.model;
 
 
+import javafx.application.Platform;
 import uno.ClockObserver;
 import uno.ColorObserver;
 import uno.ModelInterface;
@@ -31,27 +32,34 @@ public class unoModel implements ModelInterface {
 
 
     private class Clock{//pass
-        private int CLOCK=10;
+        private volatile int CLOCK=10;
         private Timer timer=new Timer(1000,event -> {
             CLOCK-=1;
             notifyclockObserver();
             if(CLOCK<=0){
-                skip();
+                skip(pointer);
             }
         });
 
         public Clock(){}
+
+        public synchronized int getCLOCK() {
+            return CLOCK;
+        }
+
         public void start(){
             timer.start();
             notifyclockObserver();
         }
         public void reset_10(){
+            getCLOCK();
             CLOCK=10;
             timer.stop();
             timer.start();
         }
 
         public void reset_5(){
+            getCLOCK();
             CLOCK=5;
             timer.stop();
             timer.start();
@@ -62,6 +70,9 @@ public class unoModel implements ModelInterface {
     private unoModel(){
 
         //洗牌
+        for(int i=0;i<4;++i){
+            card_on_player.add(new ArrayList<>());//需要先加4个空列表才行
+        }
         for (ArrayList<unoCard> array:card_on_player
              ) {
             array.addAll(table_card.getCard(7));
@@ -72,7 +83,7 @@ public class unoModel implements ModelInterface {
         }while(current_card.getNumber()==-1);
 
         clock.start();
-        notifytableObserver();
+        //notifytableObserver();  还没注册观察者
     }
 
 
@@ -145,27 +156,33 @@ public class unoModel implements ModelInterface {
         card_on_player.get(pointer).sort(null);
     }
 
-    void notifytableObserver(){
-        for (tableObserver o:tableObservers
-             ) {
-            o.update_card();
-            o.update_pointer();
-        }
+    public void notifytableObserver(){
+        Platform.runLater(()->{
+            for (tableObserver o:tableObservers
+            ) {
+                o.update_card();
+                o.update_pointer();
+            }
+        });
     }
 
     void notifycolorObserver() {
         ColorObservers.get(pointer);
     }
 
-    void notifyclockObserver(){
-        for(int i=0;i<clockObservers.size();++i){
-            clockObservers.get(i).update_clock(i,clock.CLOCK);
-        }
+    void notifyclockObserver(){//需要考虑clock的线程问题,需要借助runlater方法
+        Platform.runLater(()->{
+            for(int i=0;i<clockObservers.size();++i){
+                clockObservers.get(i).update_clock(i,clock.getCLOCK());
+            }
+        });
+
     }
 
     @Override
     public synchronized int registerObserver(tableObserver o) {
         tableObservers.add(o);
+        //notifytableObserver(); //牌还没发
         return tableObservers.size()-1;//返回其在数组位置
     }
 
@@ -252,13 +269,15 @@ public class unoModel implements ModelInterface {
     }
 
     @Override
-    public void skip() { //清空功能，然后分情况给牌
+    public void skip(int n) { //清空功能，然后分情况给牌
            //统一给一个flag，指示是否能skip
-        perform_function();
-        next();
-        current_function=null;
-        clock.reset_10();
-        notifytableObserver();
+        if(n==pointer) {
+            perform_function();
+            next();
+            current_function=null;
+            clock.reset_10();
+            notifytableObserver();
+        }
     }
 
     void update_function(){
@@ -292,17 +311,29 @@ public class unoModel implements ModelInterface {
 
     @Override
     public ArrayList<unoCard> get_my_card(int num) {
+        assert card_on_player.size()>0;
         return card_on_player.get(num);
     }
 
     @Override
-    public void get_others_card() {
-
+    public ArrayList<Integer> get_others_card(int num) {
+        ArrayList<Integer> others_card_array=new ArrayList<>(3);
+        for(int i=0;i<3;++i){
+            if(num<card_on_player.size()-1){
+                num++;
+                others_card_array.add(card_on_player.get(num).size());
+            }
+            else{
+                num=0;
+                others_card_array.add(card_on_player.get(num).size());
+            }
+        }
+        return others_card_array;
     }
 
     @Override
-    public void get_current_card() {
-
+    public unoCard get_current_card() {
+        return current_card;
     }
 
     @Override

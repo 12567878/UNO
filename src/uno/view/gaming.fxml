@@ -16,35 +16,37 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="528.0" prefWidth="1078.0">
                <children>
-                  <Circle fill="WHITE" layoutX="530.0" layoutY="340.0" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
-                  <Button fx:id="button_skip" layoutX="875.0" layoutY="516.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="92.0" text="跳过" textAlignment="CENTER" AnchorPane.bottomAnchor="35.0" AnchorPane.rightAnchor="111.0">
+                  <Button fx:id="button_skip" layoutX="875.0" layoutY="516.0" mnemonicParsing="false" onMouseClicked="#skip" prefHeight="38.0" prefWidth="92.0" text="跳过" textAlignment="CENTER" AnchorPane.bottomAnchor="35.0" AnchorPane.rightAnchor="111.0">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Button>
-                  <ImageView fitHeight="200.0" fitWidth="133.0" layoutX="34.0" layoutY="224.0" rotate="90.0">
+                  <ImageView fitHeight="200.0" fitWidth="133.0" layoutX="34.0" layoutY="224.0" rotate="90.0" AnchorPane.leftAnchor="33.0">
                      <image>
                         <Image url="@../jpg/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="200.0" fitWidth="133.0" layoutX="912.0" layoutY="224.0" rotate="270.0">
+                  <ImageView fitHeight="200.0" fitWidth="133.0" layoutX="912.0" layoutY="224.0" rotate="270.0" AnchorPane.rightAnchor="37.0">
                      <image>
                         <Image url="@../jpg/back.jpg" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="200.0" fitWidth="133.0" layoutX="473.0">
+                  <ImageView fitHeight="200.0" fitWidth="133.0" layoutX="473.0" AnchorPane.leftAnchor="473.0" AnchorPane.rightAnchor="472.0" AnchorPane.topAnchor="0.0">
                      <image>
                         <Image url="@../jpg/back.jpg" />
                      </image>
                   </ImageView>
-                  <Label layoutX="636.0" layoutY="61.0" prefHeight="48.0" prefWidth="74.0" text="电脑二" />
+                  <Label layoutX="614.0" layoutY="14.0" prefHeight="48.0" prefWidth="74.0" text="电脑二" AnchorPane.leftAnchor="614.0" AnchorPane.rightAnchor="331.0" AnchorPane.topAnchor="14.0" />
                   <Label fx:id="num_of_2" layoutX="636.0" layoutY="109.0" prefHeight="48.0" prefWidth="74.0" />
-                  <Label layoutX="33.0" layoutY="401.0" prefHeight="48.0" prefWidth="74.0" text="电脑三" />
+                  <Label layoutX="33.0" layoutY="401.0" prefHeight="48.0" prefWidth="74.0" text="电脑三" AnchorPane.leftAnchor="33.0" />
                   <Label fx:id="num_of_3" layoutX="14.0" layoutY="210.0" prefHeight="48.0" prefWidth="74.0" />
-                  <Label layoutX="967.0" layoutY="401.0" prefHeight="48.0" prefWidth="74.0" text="电脑一" />
+                  <Label layoutX="967.0" layoutY="401.0" prefHeight="48.0" prefWidth="74.0" text="电脑一" AnchorPane.rightAnchor="37.0" />
                   <Label fx:id="num_of_1" layoutX="990.0" layoutY="210.0" prefHeight="48.0" prefWidth="74.0" />
-                  <Label layoutX="135.0" layoutY="511.0" prefHeight="48.0" prefWidth="74.0" text="玩家" />
-                  <Polygon fx:id="tri_pointer" fill="#081b2c" layoutX="530.0" layoutY="355.0" rotate="180.0" scaleX="0.5" scaleY="0.5" scaleZ="0.5" stroke="BLACK" strokeType="INSIDE">
+                  <Label layoutX="135.0" layoutY="511.0" prefHeight="48.0" prefWidth="74.0" text="玩家" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="135.0">
+                     <font>
+                        <Font size="26.0" />
+                     </font></Label>
+                  <Polygon fx:id="tri_pointer" fill="#081b2c" layoutX="635.0" layoutY="363.0" rotate="180.0" scaleX="0.5" scaleY="0.5" scaleZ="0.5" stroke="BLACK" strokeType="INSIDE" AnchorPane.leftAnchor="585.0" AnchorPane.rightAnchor="393.0" AnchorPane.topAnchor="303.0">
                     <points>
                       <Double fx:value="-50.0" />
                       <Double fx:value="40.0" />
@@ -54,20 +56,25 @@
                       <Double fx:value="-60.0" />
                     </points>
                   </Polygon>
-                  <Label layoutX="582.0" layoutY="305.0" prefHeight="38.0" prefWidth="64.0" text="时间">
+                  <Label layoutX="687.0" layoutY="313.0" prefHeight="38.0" prefWidth="64.0" text="时间" AnchorPane.leftAnchor="687.0" AnchorPane.rightAnchor="327.0" AnchorPane.topAnchor="313.0">
                      <font>
                         <Font size="22.0" />
                      </font></Label>
-                  <Label fx:id="time_label" layoutX="581.0" layoutY="343.0" prefHeight="32.0" prefWidth="50.0" />
+                  <Label fx:id="time_label" layoutX="679.0" layoutY="353.0" prefHeight="32.0" prefWidth="50.0" AnchorPane.leftAnchor="679.0" AnchorPane.rightAnchor="335.0" AnchorPane.topAnchor="353.0" />
+                  <ImageView fx:id="current_card" fitHeight="200.0" fitWidth="133.0" layoutX="456.0" layoutY="249.0">
+                     <image>
+                        <Image url="@../jpg/back.jpg" />
+                     </image>
+                  </ImageView>
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <FlowPane fx:id="card_flow" hgap="30.0" layoutX="306.0" layoutY="127.0" prefHeight="359.0" prefWidth="1078.0" vgap="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <ScrollBar orientation="VERTICAL" prefHeight="213.0" prefWidth="18.0" />
-                     </children>
-                  </FlowPane>
+                  <ScrollPane hbarPolicy="NEVER" prefHeight="211.0" prefViewportHeight="211.0" prefViewportWidth="1078.0" prefWidth="1078.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <content>
+                        <FlowPane fx:id="card_flow" hgap="30.0" layoutX="306.0" layoutY="127.0" prefHeight="211.0" prefWidth="1078.0" vgap="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </content>
+                  </ScrollPane>
                </children>
             </AnchorPane>
         </items>
