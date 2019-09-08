@@ -26,12 +26,12 @@ public class unoThread extends Thread implements tableObserver, ControllerInterf
     public void run(){
         while (my_card_array.size()!=0){
             try {
-                sleep((long) (Math.random()*500));
+                sleep((long) (Math.random()*3000+1200));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             double i=Math.random();
-            if(i>0.8){
+            if(i>0.7){
                 skip();
                 continue;
             };
@@ -52,7 +52,7 @@ public class unoThread extends Thread implements tableObserver, ControllerInterf
                 }
             }
             try {
-                sleep((long) (Math.random()*500));
+                sleep((long) (Math.random()*2000));//java.lang.InterruptedException: sleep interrupted
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -64,6 +64,7 @@ public class unoThread extends Thread implements tableObserver, ControllerInterf
         my_card_array.clear();
         my_card_array.addAll(model.get_my_card(num));
         current_card=model.get_current_card();
+        current_color=model.get_color();
     }
 
     @Override

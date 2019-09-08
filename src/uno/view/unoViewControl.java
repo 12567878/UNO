@@ -182,14 +182,22 @@ public class unoViewControl implements EventHandler<MouseEvent>, tableObserver, 
     public void update_pointer() {
         int n=model.get_pointer();
         switch (n){
-            case 0:tri_pointer.rotateProperty().setValue(180);break;
-            case 1:tri_pointer.rotateProperty().setValue(90);break;
-            case 2:tri_pointer.rotateProperty().setValue(0);break;
-            case 3:tri_pointer.rotateProperty().setValue(270);break;
+            case 0:tri_pointer.rotateProperty().setValue(180);
+                button_skip.opacityProperty().setValue(1);
+                break;
+            case 1:tri_pointer.rotateProperty().setValue(90);
+                button_skip.opacityProperty().setValue(0);
+                break;
+            case 2:tri_pointer.rotateProperty().setValue(0);
+                button_skip.opacityProperty().setValue(0);
+                break;
+            case 3:tri_pointer.rotateProperty().setValue(270);
+                button_skip.opacityProperty().setValue(0);
+                break;
         }
     }
 
-    //设置四个点击事件，分别选择颜色并关闭选色器
+
 
     @Override
     public void update_color_chooser() {

@@ -24,13 +24,13 @@ public class unoModel implements ModelInterface {
     private int pointer=0;
     private unoCard current_card;
     private cardFunction current_function;
-    private Color current_color;  //换色牌和+4牌
+    private Color current_color;  //换色牌和+4牌 要保证它不会丢，不然换色skip后没牌了
     private int all_plus=0;
     private boolean direction=true;//顺时针逆时针
     private TableCard table_card=new TableCard();
     private Clock clock=new Clock();
     private boolean choosing_color=false;
-
+    Integer winner_number=null;
     private class Clock{//pass
         private volatile int CLOCK=10;
         private Timer timer=new Timer(1000,event -> {
@@ -47,31 +47,54 @@ public class unoModel implements ModelInterface {
             }
         });
 
-        public Clock(){}
+        Clock(){}
 
-        public synchronized int getCLOCK() {
+        synchronized int getCLOCK() {
             return CLOCK;
         }
 
-        public void start(){
+        void start(){
             timer.start();
             notifyclockObserver();
         }
-        public void reset_10(){
+        void reset_10(){
             getCLOCK();
             CLOCK=10;
             timer.stop();
             timer.start();
         }
 
-        public void reset_5(){
+        void reset_5(){
             getCLOCK();
             CLOCK=5;
             timer.stop();
             timer.start();
         }
+
+        void stop(){
+            timer.stop();
+        }
     }
 
+    private class Next{
+
+    }
+    void next(){  //还要加入判断是否已经获胜
+
+        if(direction){
+            if(pointer<player_number-1){//要减一
+                pointer+=1;
+            }
+            else{pointer=0;}
+        }
+        else if(pointer>0){
+            pointer-=1;
+        }
+        else {pointer=player_number-1;}
+        if(winner_number!=null){
+            if(pointer==winner_number)next();
+        }
+    }
 
     private unoModel(){
 
@@ -110,18 +133,7 @@ public class unoModel implements ModelInterface {
         return singleModel;
     }
 
-    void next(){  //还要加入判断是否已经获胜
-        if(direction){
-            if(pointer<player_number-1){//要减一
-                pointer+=1;
-            }
-            else{pointer=0;}
-        }
-        else if(pointer>0){
-            pointer-=1;
-        }
-        else {pointer=player_number-1;}
-    }
+
 
     boolean is_BP4(unoCard C){
         return C.getColor()==Color.Black
@@ -245,6 +257,12 @@ public class unoModel implements ModelInterface {
         unoCard C= card_on_player.get(num).get(a);
         if(pointer==num){
             if (match(C)||qiang(C)){
+                if(current_card.getFunc()==cardFunction.ChangeColor  //关闭当前颜色
+                        ||current_card.getFunc()==cardFunction.plusFour_ChangeColor)
+                {
+                    current_color=null;
+                    notifycolorObserver();
+                }
                 current_card=C;
                 card_on_player.get(num).remove(a);
                 if(C.getNumber()==-1)
@@ -264,9 +282,25 @@ public class unoModel implements ModelInterface {
                     next();
                     clock.reset_10();
                     notifytableObserver();
-                }//notify一定是最后一步
-                current_color=null;
-                ColorObservers.get(0).update_color(current_color);//让颜色框归零
+                }
+
+                if(winner_number==null){
+                    for(int i=0;i<4;++i){
+                        if(card_on_player.get(i).size()==0){
+                            winner_number=i;
+                        }
+                    }
+                }
+                else{
+                    int count=0;
+                    for(int i=0;i<4;++i){
+                        if(card_on_player.get(i).size()==0){
+                            ++count;
+                        }
+                    }
+                    if(count>=2)
+                        end_game();
+                }
             }
         }
         else{
@@ -277,13 +311,14 @@ public class unoModel implements ModelInterface {
                 if(C.getNumber()==-1){
                     update_function();
                 }
-                next();//要的要的
+                next();
                 clock.reset_10();
-
+                //观察牌库是否空了
                 notifytableObserver();
 
             }
         }
+
     }
 
     @Override
@@ -326,8 +361,6 @@ public class unoModel implements ModelInterface {
                 notifycolorObserver();
                 break;
             }
-
-
         }
     }
 
@@ -339,10 +372,18 @@ public class unoModel implements ModelInterface {
             switch (current_function){
                 case Forbid:break;
                 case plusTwo:
-                case plusFour_ChangeColor: {give_card(pointer,all_plus);break;}
+                case plusFour_ChangeColor: {give_card(pointer,all_plus);all_plus=0;break;}
                 default:give_card(pointer,1);
             }
             current_function=null;
+    }
+
+    void end_game(){
+        clock.stop();
+        for (unoThread t:autoplay_array
+             ) {
+            t.interrupt();
+        }
     }
 
     @Override
